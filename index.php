@@ -11,7 +11,7 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com">
 		<link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
 
-		<script src="jquery-3.5.1.min.js"></script>
+		<script src="js/jquery-3.5.1.min.js"></script>
 	</head>
 
 	<body>
