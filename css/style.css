@@ -1,0 +1,76 @@
+body {
+	font-family: 'Kanit', sans-serif;	
+}
+
+#wrapper {
+	padding: 7px;
+	width: 320px;
+}
+
+#info {
+	display: block;
+	font-size: 25px;
+	font-weight: bold;
+	margin-bottom: 25px;	
+}
+
+form {
+	width: 100%;
+	height: 50px;
+	display: block;
+	position: relative;
+}
+
+input[type="text"] {
+	float: left;
+	width: 200px;
+	height: 25px;
+}
+
+input[type="submit"] {
+	float: left;	
+
+	text-align
+	width: 75px;
+	height: 31px;
+	border: 1px solid black;
+	background-color: lightgrey;
+	margin-left: 7px;
+
+	color: inherit;
+	font: inherit;
+	outline: inherit;
+}
+
+#your_message, #message_state {
+	width: 100%;
+	display: block;
+	margin-top: 10px;
+	font-size: 17px;
+}
+
+#your_message {
+	min-height: 25px;
+}
+
+#message_state {
+	height: 25px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	input[type="submit"]:hover {
+		cursor: pointer;
+		background-color: grey;
+		color: white;
+	}
+}
+
+@media only screen and (max-width: 600px) {
+	#wrapper {
+		margin: 0 auto;
+	}
+
+	input[type="text"] {
+		font-size: 16px;
+	}
+}
