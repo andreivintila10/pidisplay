@@ -22,7 +22,7 @@
 			<div id="info">Choose what to display!</div>
 
 			<form action="index.php" method="GET">
-				<input type="text" name="message" minlength="1" maxlength="100" placeholder="Your message">
+				<input type="text" name="message" minlength="1" maxlength="100" placeholder="Your message" required>
 				<input type="submit" name="submit" value="Display">
 			</form>
 
@@ -30,6 +30,9 @@
 				var out_msg, msg_size;
 				$(document).ready(function() {
 					$("form").submit(function(e) {
+						$("input[type=\"text\"]").val("");
+						$("input[type=\"text\"]").focus();
+
 						return false;
 					});
 
@@ -64,13 +67,17 @@
 									else {
 										$("#message_state").html("Finished");
 										$("#message_state").css("color", "green");
+									
+										$.ajax({
+											async: true,
+											url: "php/output.php",
+											type: "get",
+											data: { clk_en: 1 }
+										});
 									}
 								}
 							});
 						}
-
-						$("input[type=\"text\"]").val("");
-						$("input[type=\"text\"]").focus();
 					});
 				});
 			</script>

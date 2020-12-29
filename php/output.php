@@ -5,4 +5,7 @@
 		shell_exec($bash_interrupt_prev_display);
 		echo shell_exec($bash_display);
 	}
+	else if (isset($_GET['clk_en']) && $_GET['clk_en'] == 1) {
+		shell_exec("/usr/bin/sudo /var/www/html/pidisplay/scripts/start.sh &");
+	}
 ?>
