@@ -17,8 +17,8 @@ const int latchPin = 2;
 const int switchPin = 3;
 const int resetPin = 4;
 
-const int rows = 8;
-const int columns = 24;
+const int CONST_ROWS = 8;
+const int CONST_COLUMNS = 24;
 const unsigned int bitMask = 0x000001;
 
 unsigned int display[8];
@@ -63,6 +63,12 @@ void setBit(unsigned int *value, int index) {
 }
 
 
+void clearBit(unsigned int *value, int index) {
+    unsigned int mask = ~(1 << index);
+    *value &= mask;
+}
+
+
 unsigned short getBit(unsigned int value, int index) {
     unsigned int mask = ~(1 << index);
     return (value | mask) == (unsigned int) -1;
@@ -84,7 +90,7 @@ void pulseNegEdge(int pin) {
 
 
 void SIPO(unsigned int serialData) {
-    for (int column = 0; column < columns; column++) {
+    for (int column = 0; column < CONST_COLUMNS; column++) {
         digitalWrite(dataPin, (serialData & (bitMask << column)) > 0);
         pulsePosEdge(clockPin);
     }
@@ -100,20 +106,20 @@ void initialiseDisplay(void) {
 
 
 void clearDisplay(void) {
-    for (int row = 0; row < rows; row++)
-	display[row] <<= columns;
+    for (int row = 0; row < CONST_ROWS; row++)
+	display[row] <<= CONST_COLUMNS;
 }
 
 
 void illuminateDisplay(void) {
-    for (int row = 0; row < rows; row++) {
-	display[row] = (unsigned int) 16777215;
+    for (int row = 0; row < CONST_ROWS; row++) {
+	display[row] = 0xFFFFFF;
     }
 }
 
 
 void cleanUp(void) {
-    SIPO((unsigned int) 0);
+    SIPO(0x000000);
 
     digitalWrite(dataPin, 0);
     digitalWrite(clockPin, 0);
@@ -138,7 +144,7 @@ void init(void) {
 
 
 void multiplexing(void) {
-    for (int i = 0; i < rows && !stop; i++) {
+    for (int i = 0; i < CONST_ROWS && !stop; i++) {
 	SIPO(display[i]);
 
 	delayMicroseconds(100);
@@ -165,6 +171,31 @@ void multiplexingDelayed(int delayBy) {
 }
 
 
+void brightnessControll() {
+    clearDisplay();
+
+    unsigned int sprite[1][9] = {bar_lg};
+    int offset;
+    int i = 0;
+    for (;;) {
+	for (int i = 1; i <= 512; i++) {
+	    for (int j = 0; j < 2; j++) {
+		offset = j * 12;
+		if (j == 0 || i % 512 == 0) {
+		    for (int k = 0; k < CONST_ROWS; k++)
+			display[k] |= sprite[0][k] << offset;
+		}
+		else {
+		    for (int k = 0; k < CONST_ROWS; k++)
+			display[k] ^= sprite[0][k] << offset;
+		}
+	    }
+	    multiplexing();
+	}
+    }
+}
+
+
 void shiftingWord(unsigned int letters[][9], int numberOfLetters) {
     int delayBy = 16;
 
@@ -173,15 +204,15 @@ void shiftingWord(unsigned int letters[][9], int numberOfLetters) {
 
     for (int letter = 0; letter < numberOfLetters; letter++) {
 	for (int bit = letters[letter][8] + 1; bit >= 0; bit--) {
-	    for (int row = 0; row < rows; row++)
+	    for (int row = 0; row < CONST_ROWS; row++)
 		display[row] = display[row] << 1 | ((unsigned int) (letters[letter][row] >> bit));
 
 	    multiplexingDelayed(delayBy);
 	}
     }
 
-    for (int column = 0; column < columns; column++) {
-	for (int row = 0; row < rows; row++)
+    for (int column = 0; column < CONST_COLUMNS; column++) {
+	for (int row = 0; row < CONST_ROWS; row++)
 		display[row] <<= 1;
 
 	multiplexingDelayed(delayBy);
@@ -193,7 +224,7 @@ void testLetter(void) {
     clearDisplay();
 
     unsigned int letter[1][9] = {arrow_left};
-    for (int row = 0; row < rows; row++)
+    for (int row = 0; row < CONST_ROWS; row++)
 	display[row] |= letter[0][row];
 
     for (;;)
@@ -204,32 +235,45 @@ void testLetter(void) {
 void spiral(void) {
     clearDisplay();
 
-    int delayBy = 10;
+    int delayBy = 15;
 
     int  top, right, bottom, left;
-    for (int loop = 0; loop < rows / 2; loop++) {
-	for (top = columns - loop - 1; top >= loop; top--) {
+    for (int loop = 0; loop < CONST_ROWS / 2; loop++) {
+	for (top = CONST_COLUMNS - loop - 1; top >= loop; top--) {
 	    setBit(&display[loop], top);
 	    multiplexingDelayed(delayBy);
 	}
 
-	for (right = 1 + loop; right < rows - loop; right++) {
+	for (right = 1 + loop; right < CONST_ROWS - loop; right++) {
 	    setBit(&display[right], loop);
 	    multiplexingDelayed(delayBy);
 	}
 
-	for (bottom = 1 + loop; bottom < columns - loop; bottom++) {
-	    setBit(&display[rows - loop - 1], bottom);
+	for (bottom = 1 + loop; bottom < CONST_COLUMNS - loop; bottom++) {
+	    setBit(&display[CONST_ROWS - loop - 1], bottom);
 	    multiplexingDelayed(delayBy);
 	}
 
-	for (left = rows - loop - 2; left >= 1 + loop; left--) {
-	    setBit(&display[left], columns - loop - 1);
+	for (left = CONST_ROWS - loop - 2; left >= 1 + loop; left--) {
+	    setBit(&display[left], CONST_COLUMNS - loop - 1);
 	    multiplexingDelayed(delayBy);
 	}
     }
 
     multiplexingDelayed(313);
+}
+
+
+void clearDisplayAnimation(void) {
+    int delayBy = 12;
+
+    for (int row = 0; row < CONST_ROWS; row++) {
+	for (int column = CONST_COLUMNS - 1; column >= 0; column--) {
+	    setBit(&display[row], column);
+	    multiplexingDelayed(delayBy);
+	    clearBit(&display[row], column);
+	}
+    }
 }
 
 
@@ -240,9 +284,13 @@ void copyLetter(unsigned int to[9], unsigned int letter[9]) {
 
 
 void display_clock(void) {
-    clearDisplay();
-
     int row, hour, minute;
+
+    int ok = 0;
+    int display_at_minute = 0;
+    int display_for_minutes = 1;
+
+    clearDisplay();
 
     time_t now;
     time(&now);
@@ -252,31 +300,48 @@ void display_clock(void) {
 	hour = time_now -> tm_hour;
 	minute = time_now -> tm_min;
 
-	for (row = 0; row < rows; row++) {
-	    // Clear display
-	    display[row] <<= columns;
+	if (minute == display_at_minute) {
+	    if (ok == 0) {
+		clearDisplay();
+		ok = 1;
+	    }
+	
+	    for (row = 0; row < CONST_ROWS; row++) {
+		// Clear display
+		display[row] <<= CONST_COLUMNS;
 
-	    // Hour first digit
-	    display[row] |= clk[(hour / 10)][row] << 18;
+		// Hour first digit
+		display[row] |= clk[(hour / 10)][row] << 18;
 
-	    // Hour second digit
-	    display[row] |= clk[(hour % 10)][row] << 13;
+		// Hour second digit
+		display[row] |= clk[(hour % 10)][row] << 13;
 
-	    // Semi colon delimiter
-	    display[row] |= clk[10][row] << 11;
+		// Semi colon delimiter
+		display[row] |= clk[10][row] << 11;
 
-	    // Minute first digit
-	    display[row] |= clk[(minute / 10)][row] << 6;
+		// Minute first digit
+		display[row] |= clk[(minute / 10)][row] << 6;
 
-	    // Minute second digit
-	    display[row] |= clk[(minute % 10)][row] << 1;
+		// Minute second digit
+		display[row] |= clk[(minute % 10)][row] << 1;
+	    }
+	    
+	    multiplexing();
 	}
-
-	multiplexing();
+	else if (minute == display_at_minute + display_for_minutes && ok == 1) {
+	    clearDisplayAnimation();
+	    ok = 0;
+	}
 
 	time(&now);
 	localtime(&now);
-    } while (1);
+    } while (!stop);
+    
+    if (stop) {
+    	cleanUp();
+	printf("Interrupted\n");
+	exit(1);
+    }
 }
 
 
@@ -307,7 +372,9 @@ int main(int argc, char *argv[]) {
 
 	unsigned int triangles[][8] = {{1, 3, 7, 15, 31, 63, 127, 255}};
 
+	//  brightnessControll();
 	display_clock();
+	clearDisplayAnimation();
 	for (int i = 0; i < 1; i++) {
 	    //  shiftingWord(xmas, xmasSize);
 	    shiftingWord(face_test, face_size);
