@@ -67,12 +67,12 @@
 									else {
 										$("#message_state").html("Finished");
 										$("#message_state").css("color", "green");
-									
+
 										$.ajax({
 											async: true,
 											url: "php/output.php",
-											type: "get",
-											data: { clk_en: 1 }
+											type: "post",
+											data: { resume: 1 }
 										});
 									}
 								}

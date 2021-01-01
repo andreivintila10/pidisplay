@@ -504,7 +504,6 @@ void timedControll(void) {
 	    }
 	    else if (option == 4 && second == 0)
 		tearDropAnimation();
-
 	}
 
 	time(&now);
