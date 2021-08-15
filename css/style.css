@@ -57,6 +57,52 @@ input[type="submit"] {
 	height: 25px;
 }
 
+.button {
+	width: 100px;
+	height: 50px;
+	border: 1px solid black;
+	background-color: white;
+	text-align: center;
+	line-height: 50px;
+}
+
+.button:hover {
+	cursor: pointer;
+	background-color: lightgreen;
+}
+
+#go_to_snake {
+
+}
+
+#board {
+	border: 1px solid black;
+	display: block;
+	margin: 0px auto;
+}
+
+#display-score {
+	width: 100px;
+	display: block;
+	margin: 0px auto;
+	margin-top: 20px;
+
+	font-size: 30px;
+	font-weight: bold;
+	text-align: center;
+}
+
+#score {
+	border: 1px solid black;
+}
+
+.point {
+	float:left;
+	width: 25px;
+	height: 25px;
+	background-color: white;
+}
+
 @media (hover: hover) and (pointer: fine) {
 	input[type="submit"]:hover {
 		cursor: pointer;

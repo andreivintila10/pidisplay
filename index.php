@@ -4,7 +4,7 @@
 		<title>Led Matrix</title>
 
 		<meta charset="UTF-8">
-		<meta name="description" content="Led Matrix">
+		<meta name="description" content="Text - PiDisplay">
 		<meta name="author" content="Andrei Vintila">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="robots" content="noindex" />
@@ -15,6 +15,7 @@
 		<link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
 
 		<script src="js/jquery-3.5.1.min.js"></script>
+		<noscript>Your browser does not support JavaScript</noscript>
 	</head>
 
 	<body>
@@ -58,7 +59,7 @@
 								async: true,
 								url: "php/output.php",
 								type: "get",
-								data: { message: out_msg },
+								data: { mode: "text", message: out_msg },
 								success: function(response) {
 									if (response == "Interrupted\n") {
 										$("#message_state").html("Interrupted");
@@ -72,12 +73,16 @@
 											async: true,
 											url: "php/output.php",
 											type: "post",
-											data: { resume: 1 }
+											data: { mode: "scheduled" }
 										});
 									}
 								}
 							});
 						}
+					});
+
+					$("#go_to_snake").on("click", function() {
+						window.location.href = "snake.html";
 					});
 				});
 			</script>
@@ -85,5 +90,6 @@
 			<div id="your_message"></div>
 			<div id="message_state"></div>
 		</div>
+		<div id="go_to_snake" class="button">Play Snake</div>
 	</body>
 </html>

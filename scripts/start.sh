@@ -11,5 +11,5 @@ fi
 
 if ! pgrep -x "LedMatrix" > /dev/null
 then
-	/usr/bin/sudo /var/www/html/pidisplay/c/LedMatrix &
+	/usr/bin/sudo /var/www/html/pidisplay/c/LedMatrix -o scheduled &
 fi
