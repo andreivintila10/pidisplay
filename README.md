@@ -14,8 +14,8 @@ Current features include:
   - custom characters (arrows, smiley face)
 
 Future work:
-  - displaying temperature
-  - displaying important news / sports fixtures or results
+  - display temperature
+  - display important news / sports fixtures or results
   - reminders
   - improve web interface
 
