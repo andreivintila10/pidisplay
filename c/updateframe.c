@@ -6,20 +6,20 @@
 const int CONST_ROWS = 8;
 
 int main(int argc, char* argv[]) {
-    if (argc - 1 != CONST_ROWS) return -1;
+	if (argc - 1 != CONST_ROWS) return -1;
 
-    FILE *input_frame = fopen("/var/www/html/pidisplay/c/input_frame.txt", "w");
+	FILE *input_frame = fopen("/var/www/html/pidisplay/c/input_frame.txt", "w");
 
-    if (input_frame) {
-        if (flock(fileno(input_frame), LOCK_EX) == 0) {
-            for (int index = 1; index < argc; index++)
-                fprintf(input_frame, "%s ", argv[index]);
+	if (input_frame) {
+		if (flock(fileno(input_frame), LOCK_EX) == 0) {
+			for (int index = 1; index < argc; index++)
+				fprintf(input_frame, "%s ", argv[index]);
 
-            flock(fileno(input_frame), LOCK_UN);
-        }
-    }
+			flock(fileno(input_frame), LOCK_UN);
+		}
+	}
 
-    fclose(input_frame);
+	fclose(input_frame);
 
-    return 0;
+	return 0;
 }

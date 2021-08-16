@@ -34,114 +34,114 @@ const int mux_switch_period_low = 100;      // Most clear image.
 unsigned int display[8];
 
 unsigned int ASCII[128][9] = {SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP,		// 0 - 15
-			      			 SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP,		// 16 - 31
-			      			 SP, EM, SP, SP, SP, SP, SP, AP, OP, CP, SP, PLUS, SP, MINUS, FS, SP,	// 32 - 47
-			    			 d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, SC, SP, SP, EQ, SP, QM,		// 48 - 63
-			     	         SP, A, B, C, D, E, F, G, H, I, J, K, L , M, N, O,				        // 64 - 79
-			                 P, Q, R, S, T, U, V, W, X, Y, Z, SP, SP, SP, SP, UL,			        // 80 - 95
-			                 SP, SP};									                            // 96 - 111
+                              SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP,		// 16 - 31
+                              SP, EM, SP, SP, SP, SP, SP, AP, OP, CP, SP, PLUS, SP, MINUS, FS, SP,	// 32 - 47
+							  d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, SC, SP, SP, EQ, SP, QM,		// 48 - 63
+                              SP, A, B, C, D, E, F, G, H, I, J, K, L , M, N, O,				        // 64 - 79
+                              P, Q, R, S, T, U, V, W, X, Y, Z, SP, SP, SP, SP, UL,			        // 80 - 95
+                              SP, SP};									                            // 96 - 97
 
 unsigned int clk[11][9] = {clk_0, clk_1, clk_2, clk_3, clk_4, clk_5, clk_6, clk_7, clk_8, clk_9, clk_sc};
 unsigned int year2021[4][9] = {y2, y0, y2, y1};
 
 void signalHandler(int signum) {
-    stop = 1;
+	stop = 1;
 }
 
 
 void removeSlash(char string[]) {
-    int i = 0;
-    while (i < strlen(string) - 1) {
+	int i = 0;
+	while (i < strlen(string) - 1) {
 		if (string[i] == '\\') {
 			switch (string[i + 1]) {
-			case '\'': strcpy(string + i, string + i + 1); break;
-			case '?':  strcpy(string + i, string + i + 1); break;
-			case '(':  strcpy(string + i, string + i + 1); break;
-			case ')':  strcpy(string + i, string + i + 1); break;
-			default:   break;
+				case '\'': strcpy(string + i, string + i + 1); break;
+				case '?':  strcpy(string + i, string + i + 1); break;
+				case '(':  strcpy(string + i, string + i + 1); break;
+				case ')':  strcpy(string + i, string + i + 1); break;
+				default:   break;
 			}
 		}
 
 		i++;
-    }
+	}
 }
 
 
 void setBit(unsigned int *value, int index) {
-    unsigned int mask = 1 << index;
-    *value |= mask;
+	unsigned int mask = 1 << index;
+	*value |= mask;
 }
 
 
 void clearBit(unsigned int *value, int index) {
-    unsigned int mask = ~(1 << index);
-    *value &= mask;
+	unsigned int mask = ~(1 << index);
+	*value &= mask;
 }
 
 
 unsigned short getBit(unsigned int value, int index) {
-    unsigned int mask = ~(1 << index);
-    return (value | mask) == (unsigned int) -1;
+	unsigned int mask = ~(1 << index);
+	return (value | mask) == (unsigned int) -1;
 }
 
 
 void pulsePosEdge(int pin) {
-    digitalWrite(pin, 0);
-    delayMicroseconds(1);
-    digitalWrite(pin, 1);
+	digitalWrite(pin, 0);
+	delayMicroseconds(1);
+	digitalWrite(pin, 1);
 }
 
 
 void pulseNegEdge(int pin) {
-    digitalWrite(pin, 1);
-    delayMicroseconds(1);
-    digitalWrite(pin, 0);
+	digitalWrite(pin, 1);
+	delayMicroseconds(1);
+	digitalWrite(pin, 0);
 }
 
 
 void SIPO(unsigned int serialData) {
-    for (int column = 0; column < CONST_COLUMNS; column++) {
-        digitalWrite(dataPin, (serialData & (bitMask << column)) > 0);
-        pulsePosEdge(clockPin);
-    }
+	for (int column = 0; column < CONST_COLUMNS; column++) {
+		digitalWrite(dataPin, (serialData & (bitMask << column)) > 0);
+		pulsePosEdge(clockPin);
+	}
 
-    pulsePosEdge(latchPin);
+	pulsePosEdge(latchPin);
 }
 
 
 void initialiseDisplay(void) {
-    for (int row = 0; row < 8; row++)
-        display[row] = (unsigned int) 0;
+	for (int row = 0; row < 8; row++)
+		display[row] = (unsigned int) 0;
 }
 
 
 void clearDisplay(void) {
-    for (int row = 0; row < CONST_ROWS; row++)
-	display[row] <<= CONST_COLUMNS;
+	for (int row = 0; row < CONST_ROWS; row++)
+		display[row] <<= CONST_COLUMNS;
 }
 
 
 void illuminateDisplay(void) {
-    for (int row = 0; row < CONST_ROWS; row++) {
-	display[row] = 0xFFFFFF;
-    }
+	for (int row = 0; row < CONST_ROWS; row++) {
+		display[row] = 0xFFFFFF;
+	}
 }
 
 
 void invertDisplay(void) {
-    for (int row = 0; row < CONST_ROWS; row++)
-	display[row] = ~display[row];
+	for (int row = 0; row < CONST_ROWS; row++)
+		display[row] = ~display[row];
 }
 
 
 void cleanUp(void) {
-    SIPO(0x000000);
+	SIPO(0x000000);
 
-    digitalWrite(dataPin, 0);
-    digitalWrite(clockPin, 0);
-    digitalWrite(latchPin, 0);
-    digitalWrite(switchPin, 0);
-    digitalWrite(resetPin, 0);
+	digitalWrite(dataPin, 0);
+	digitalWrite(clockPin, 0);
+	digitalWrite(latchPin, 0);
+	digitalWrite(switchPin, 0);
+	digitalWrite(resetPin, 0);
 }
 
 
@@ -153,21 +153,21 @@ void interrupt(void) {
 
 
 void init(void) {
-    initialiseDisplay();
+	initialiseDisplay();
 
-    pinMode(dataPin, OUTPUT);
-    pinMode(clockPin, OUTPUT);
-    pinMode(latchPin, OUTPUT);
-    pinMode(switchPin, OUTPUT);
-    pinMode(resetPin, OUTPUT);
+	pinMode(dataPin, OUTPUT);
+	pinMode(clockPin, OUTPUT);
+	pinMode(latchPin, OUTPUT);
+	pinMode(switchPin, OUTPUT);
+	pinMode(resetPin, OUTPUT);
 
-    cleanUp();
-    pulseNegEdge(resetPin);
+	cleanUp();
+	pulseNegEdge(resetPin);
 }
 
 
 void multiplexing(int switchPeriod) {
-    for (int i = 0; i < CONST_ROWS && !stop; i++) {
+	for (int i = 0; i < CONST_ROWS && !stop; i++) {
 		SIPO(display[i]);
 
 		delayMicroseconds(switchPeriod);
@@ -182,23 +182,23 @@ void multiplexing(int switchPeriod) {
 
 	if (stop) {
 		interrupt();
-    }
+	}
 }
 
 
 void multiplexingDelayed(int switchPeriod, int delayBy) {
-    for (int tick = 0; tick < delayBy; tick++)
+	for (int tick = 0; tick < delayBy; tick++)
 		multiplexing(switchPeriod);
 }
 
 
 void brightnessControll(void) {
-    clearDisplay();
+	clearDisplay();
 
-    unsigned int sprite[1][9] = {bar_lg};
-    int offset;
-    int i = 0;
-    for (;;) {
+	unsigned int sprite[1][9] = {bar_lg};
+	int offset;
+	int i = 0;
+	for (;;) {
 		for (int i = 1; i <= 512; i++) {
 			for (int j = 0; j < 2; j++) {
 				offset = j * 12;
@@ -211,54 +211,55 @@ void brightnessControll(void) {
 						display[k] ^= sprite[0][k] << offset;
 				}
 			}
+
 			multiplexing(mux_switch_period_low);
 		}
-    }
+	}
 }
 
 
 void shiftingWord(unsigned int letters[][9], int numberOfLetters, int delayBy) {
-    illuminateDisplay();
-    multiplexingDelayed(mux_switch_period_low, 480);
-    clearDisplay();
+	illuminateDisplay();
+	multiplexingDelayed(mux_switch_period_low, 480);
+	clearDisplay();
 
-    for (int letter = 0; letter < numberOfLetters; letter++) {
+	for (int letter = 0; letter < numberOfLetters; letter++) {
 		for (int bit = letters[letter][8] + 1; bit >= 0; bit--) {
 			for (int row = 0; row < CONST_ROWS; row++)
 			display[row] = display[row] << 1 | letters[letter][row] >> bit;
 
 			multiplexingDelayed(mux_switch_period_low, delayBy);
 		}
-    }
+	}
 
-    for (int column = 0; column < CONST_COLUMNS; column++) {
+	for (int column = 0; column < CONST_COLUMNS; column++) {
 		for (int row = 0; row < CONST_ROWS; row++)
 			display[row] <<= 1;
 
 		multiplexingDelayed(mux_switch_period_low, delayBy);
-    }
+	}
 }
 
 
 void testLetter(void) {
-    clearDisplay();
+	clearDisplay();
 
-    unsigned int letter[1][9] = {d9};
-    for (int row = 0; row < CONST_ROWS; row++)
+	unsigned int letter[1][9] = {d9};
+	for (int row = 0; row < CONST_ROWS; row++)
 		display[row] |= letter[0][row];
 
-    for (;;)
+	for (;;)
 		multiplexing(mux_switch_period_low);
 }
 
 
 void spiral(void) {
-    clearDisplay();
+	clearDisplay();
 
-    int delayBy = 3;
+	int delayBy = 3;
 
-    int  top, right, bottom, left;
-    for (int loop = 0; loop < CONST_ROWS / 2; loop++) {
+	int  top, right, bottom, left;
+	for (int loop = 0; loop < CONST_ROWS / 2; loop++) {
 		for (top = CONST_COLUMNS - loop - 1; top >= loop; top--) {
 			setBit(&display[loop], top);
 			multiplexingDelayed(mux_switch_period_high, delayBy);
@@ -278,54 +279,54 @@ void spiral(void) {
 			setBit(&display[left], CONST_COLUMNS - loop - 1);
 			multiplexingDelayed(mux_switch_period_high, delayBy);
 		}
-    }
+	}
 
-    multiplexingDelayed(mux_switch_period_high, 80);
+	multiplexingDelayed(mux_switch_period_high, 80);
 }
 
 
 void clearDisplayAnimation(void) {
-    int delayBy = 4;
+	int delayBy = 4;
 
-    for (int row = 0; row < CONST_ROWS; row++) {
+	for (int row = 0; row < CONST_ROWS; row++) {
 		for (int column = CONST_COLUMNS - 1; column >= 0; column--) {
 			setBit(&display[row], column);
 			multiplexingDelayed(mux_switch_period_high, delayBy);
 			clearBit(&display[row], column);
 		}
-    }
+	}
 }
 
 
 void copyLetter(unsigned int to[9], unsigned int letter[9]) {
-    for (int i = 0; i < 9; i++)
+	for (int i = 0; i < 9; i++)
 		to[i] = letter[i];
 }
 
 
 void displayYear(void) {
-    for (int row = 0; row < CONST_ROWS; row++) {
+	for (int row = 0; row < CONST_ROWS; row++) {
 		display[row] |= year2021[0][row] << 18;
 		display[row] |= year2021[1][row] << 12;
 		display[row] |= year2021[2][row] << 6;
 		display[row] |= year2021[3][row] << 1;
-    }
+	}
 }
 
 
 void flashYear(void) {
-    for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 3; i++) {
 		displayYear();
 		multiplexingDelayed(mux_switch_period_high, 440);
 		clearDisplay();
 		multiplexingDelayed(mux_switch_period_high, 440);
-    }
+	}
 }
 
 
 void displaySecondsCounter(int count) {
-    int shift;
-    for (int row = 0; row < CONST_ROWS; row++) {
+	int shift;
+	for (int row = 0; row < CONST_ROWS; row++) {
 		// Clear display
 		display[row] <<= CONST_COLUMNS;
 
@@ -339,24 +340,24 @@ void displaySecondsCounter(int count) {
 
 		// Second digit
 		display[row] |= ASCII[(count % 10 + 48)][row] << shift;
-    }
+	}
 }
 
 
 void tearDropAnimation(void) {
-    clearDisplay();
+	clearDisplay();
 
-    int column, length;
+	int column, length;
 
-    int upper1 = 23;
-    int lower1 = 0;
+	int upper1 = 23;
+	int lower1 = 0;
 
-    int upper2 = 3;
-    int lower2 = 1;
+	int upper2 = 3;
+	int lower2 = 1;
 
-    srandom((unsigned int) time(NULL));
-    int count = 0;
-    while (count < 1000) {
+	srandom((unsigned int) time(NULL));
+	int count = 0;
+	while (count < 1000) {
 		for (int row = CONST_ROWS - 2; row >= 0; row--) {
 			display[row + 1] = display[row];
 		}
@@ -371,29 +372,29 @@ void tearDropAnimation(void) {
 
 		multiplexingDelayed(mux_switch_period_high, 8);
 		count++;
-    }
+	}
 }
 
 
 double easeInQuadratic (double time_v, double base, double change, double duration) {
-    time_v /= duration;
-    return change * time_v * time_v + base;
+	time_v /= duration;
+	return change * time_v * time_v + base;
 }
 
 
 double easeOutQuadratic(double t, double b, double c, double d) {
-    t /= d;
-    return -c * t * (t - 2) + b;
+	t /= d;
+	return -c * t * (t - 2) + b;
 }
 
 
 void easeInEaseOutAnimation(unsigned int symbols[][9], int size) {
-    clearDisplay();
-    
-    double time_v = 0.0;
-    int delayBy;
+	clearDisplay();
+	
+	double time_v = 0.0;
+	int delayBy;
 
-    for (int symbol = 0; symbol < size; symbol++) {
+	for (int symbol = 0; symbol < size; symbol++) {
 		time_v = 0;
 		for (int bit = symbols[symbol][8] - 1; bit >= 0; bit--) {
 			for (int row = 0; row < CONST_ROWS; row++)
@@ -424,12 +425,12 @@ void easeInEaseOutAnimation(unsigned int symbols[][9], int size) {
 			multiplexingDelayed(mux_switch_period_high, delayBy);
 			time_v++;
 		}
-    }
+	}
 }
 
 
 void displayClock(int hour, int minute) {
-    for (int row = 0; row < CONST_ROWS; row++) {
+	for (int row = 0; row < CONST_ROWS; row++) {
 		// Clear display
 		display[row] <<= CONST_COLUMNS;
 
@@ -447,34 +448,34 @@ void displayClock(int hour, int minute) {
 
 		// Minute second digit
 		display[row] |= clk[(minute % 10)][row] << 1;
-    }
+	}
 }
 
 
 void timedControll(void) {
-    int countdown, option;
-    int year, month, day, hour, minute, second;
+	int countdown, option;
+	int year, month, day, hour, minute, second;
 
-    int ok = 0;
-    int display_at_minute = 0;
-    int display_for_minutes = 1;
+	int ok = 0;
+	int display_at_minute = 0;
+	int display_for_minutes = 1;
 
-    unsigned int new_year_message[][9] = {H, A, P, P, Y, SP, N, E, W, SP, Y, E, A, R, SP, d2, d0, d2, d1, EM, EM, EM};
-    unsigned int new_year_message2[][9] = {L, A, SP, M, U, L, T, I, SP, A, N, I, SP, d2, d0, d2, d1, EM, EM, EM};
+	unsigned int new_year_message[][9] = {H, A, P, P, Y, SP, N, E, W, SP, Y, E, A, R, SP, d2, d0, d2, d1, EM, EM, EM};
+	unsigned int new_year_message2[][9] = {L, A, SP, M, U, L, T, I, SP, A, N, I, SP, d2, d0, d2, d1, EM, EM, EM};
 	unsigned int startup_message[][100] = {P, I, D, I, S, P, L, A, Y, SP, R, E, A, D, Y};
-    unsigned int arrows[][9] = {arrow_left, arrow_left, arrow_left, arrow_left, arrow_left};
+	unsigned int arrows[][9] = {arrow_left, arrow_left, arrow_left, arrow_left, arrow_left};
 
-    int ny_size = sizeof(new_year_message) / sizeof(new_year_message[0]);
-    int ny_size2 = sizeof(new_year_message2) / sizeof(new_year_message2[0]);
-    int arrows_size = sizeof(arrows) / sizeof(arrows[0]);
+	int ny_size = sizeof(new_year_message) / sizeof(new_year_message[0]);
+	int ny_size2 = sizeof(new_year_message2) / sizeof(new_year_message2[0]);
+	int arrows_size = sizeof(arrows) / sizeof(arrows[0]);
 
-    clearDisplay();
+	clearDisplay();
 
-    time_t now;
-    time(&now);
-    struct tm* time_now = localtime(&now);
+	time_t now;
+	time(&now);
+	struct tm* time_now = localtime(&now);
 
-    do {
+	do {
 		year = time_now -> tm_year + 1900;
 		month = time_now -> tm_mon + 1;
 		day = time_now -> tm_mday;
@@ -524,28 +525,28 @@ void timedControll(void) {
 
 		time(&now);
 		localtime(&now);
-    } while (!stop);
+	} while (!stop);
 
-    if (stop) {
-    	interrupt();
-    }
+	if (stop) {
+		interrupt();
+	}
 }
 
 
 int main(int argc, char *argv[]) {
-    signal(SIGINT, signalHandler);
-    signal(SIGTERM, signalHandler);
+	signal(SIGINT, signalHandler);
+	signal(SIGTERM, signalHandler);
 
-    piHiPri(1);
+	piHiPri(1);
 
-    if (wiringPiSetup() == -1) {
-        printf("Error setting up Pi pins");
-        fflush(stdout);
+	if (wiringPiSetup() == -1) {
+		printf("Error setting up Pi pins");
+		fflush(stdout);
 
-        return 1;
-    }
+		return 1;
+	}
 
-    init();
+	init();
 
 	if (argc < 3 || argc > 4) return 1;
 
@@ -566,7 +567,7 @@ int main(int argc, char *argv[]) {
 	printf("Option: %s\n", option);
 	printf("Data: %s\n", data);
 	fflush(stdout);
-    if (strcmp(option, "scheduled") == 0) {
+	if (strcmp(option, "scheduled") == 0) {
 		unsigned int triangles[][8] = {{1, 3, 7, 15, 31, 63, 127, 255}};
 		unsigned int xmas[][9] = {M, E, R, R, Y, SP, C, H, R, I, S, T, M, A, S, EM};
 		unsigned int arrows[][9] = {arrow_left, arrow_left, arrow_left, arrow_left, arrow_left};
@@ -577,29 +578,9 @@ int main(int argc, char *argv[]) {
 
 		int faces_size = sizeof(faces) / sizeof(faces[0]);
 
-		//  brightnessControll();
 		timedControll();
-		//  display_clock();
-		//  tearDropAnimation();
-		//  clearDisplayAnimation();
-		//  for (int i = 0; i < 1; i++) {
-			//  shiftingWord(xmas, xmas_size);
-
-			//  shiftingWord(faces, faces_size, 20);
-			//  shiftingWord(arrows, arrows_size, 20);
-			//  spiral();
-		//  }
-
-		//  easeInEaseOutAnimation(arrows, arrows_size);
-		//  flashYear();
-		//  spiral();
-		//  multiplexingDelayed(mux_switch_period_high, delayBy);
-		//  clearDisplay();
-		//  multiplexingDelayed(mux_switch_period_high, delayBy);
-
-		//  testLetter();
-    }
-    else if (strcmp(option, "text") == 0) {
+	}
+	else if (strcmp(option, "text") == 0) {
 		removeSlash(data);
 
 		int index;
@@ -612,88 +593,34 @@ int main(int argc, char *argv[]) {
 		}
 
 		shiftingWord(letters, size, 32);
-
-		// unsigned int arrows[][9] = {arrow_left, arrow_left, arrow_left, arrow_left};
-		// int arrows_size = sizeof(arrows) / sizeof(arrows[0]);
-		// easeInEaseOutAnimation(arrows, arrows_size);
-    }
+	}
 	else if (strcmp(option, "stream") == 0) {
 		char fileName[42] = STREAM_FILE;
 		FILE *input_frame;
 		int fileDescriptor;
 
-        // FILE *log_frames = fopen("/var/www/html/pidisplay/c/log_frames.txt", "w");
-		// struct stat filestat;
-		// stat(fileName, &filestat);
-
-		// unsigned long lastModificationTime = 0;
-		// unsigned long currentModificationTime = filestat.st_mtime;
-
 		int row;
 		char hexStr[9];
 
-		// int hour, minute, second, milisecond;
-		// time_t now;
-    	// time(&now);
-    	// struct tm* time_now = localtime(&now);
-
-		// input_frame = fopen(fileName, "r+");
-		// fileDescriptor = fileno(input_frame);
-		// fclose(input_frame);
-		// input_frame = NULL;
 		do {
-			// if (currentModificationTime > lastModificationTime) {
-			// 	lastModificationTime = currentModificationTime;
-			// 	printf("File modify time: %lu\n", filestat.st_mtime);
-			// 	fflush(stdout);
-
-				input_frame = fopen(fileName, "r");
-				if (input_frame != NULL) {
-					if (flock(fileno(input_frame), LOCK_SH | LOCK_NB) == 0) {
-						for (row = 0; row < CONST_ROWS; row++) {
-							fscanf(input_frame, "%s ", hexStr);
-							// fprintf(log_frames, "%s ", hexStr);
-							display[row] = (unsigned int) strtol(hexStr, NULL, 0);
-						}
-
-						// else {
-						// 	printf("flock achieved lock but something bad happened\n");
-						// 	errno = 0;
-						// }
-						flock(fileno(input_frame), LOCK_UN);
+			input_frame = fopen(fileName, "r");
+			if (input_frame != NULL) {
+				if (flock(fileno(input_frame), LOCK_SH | LOCK_NB) == 0) {
+					for (row = 0; row < CONST_ROWS; row++) {
+						fscanf(input_frame, "%s ", hexStr);
+						display[row] = (unsigned int) strtol(hexStr, NULL, 0);
 					}
-					// else
-					// 	printf("flock could not achieve lock\n");
-					// else {
-					// 	time(&now);
-					// 	localtime(&now);
 
-					// 	hour = time_now -> tm_hour;
-					// 	minute = time_now -> tm_min;
-					// 	second = time_now -> tm_sec;
-
-					// 	printf("File locked - skipping (%d:%d:%d)\n", hour, minute, second);
-					// 	fflush(stdout);
-					// }
+					flock(fileno(input_frame), LOCK_UN);
 				}
-				// else {
-				// 	printf("Could not open file\n");
-				// 	continue;
-				// }
+			}
 
-				// fflush(stdout);
-				fclose(input_frame);
-				input_frame = NULL;
-			// }
+			fclose(input_frame);
+			input_frame = NULL;
 
-				//delayMicroseconds(100);
-				multiplexing(mux_switch_period_high);
+			multiplexing(mux_switch_period_high);
 
-			// stat(fileName, &filestat);
-			// currentModificationTime = filestat.st_mtime;
 		} while (!stop);
-
-		// fclose(log_frames);
 	}
 	else if (strcmp(option, "animation") == 0) {
 		unsigned int startup_message[][9] = {P, I, D, I, S, P, L, A, Y, SP, R, E, A, D, Y};
@@ -704,5 +631,6 @@ int main(int argc, char *argv[]) {
 		spiral();
 	}
 
-    return 0;
+	return 0;
+
 }
