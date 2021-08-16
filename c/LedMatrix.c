@@ -36,7 +36,7 @@ unsigned int display[8];
 unsigned int ASCII[128][9] = {SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP,		// 0 - 15
                               SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP, SP,		// 16 - 31
                               SP, EM, SP, SP, SP, SP, SP, AP, OP, CP, SP, PLUS, SP, MINUS, FS, SP,	// 32 - 47
-							  d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, SC, SP, SP, EQ, SP, QM,		// 48 - 63
+                              d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, SC, SP, SP, EQ, SP, QM,		// 48 - 63
                               SP, A, B, C, D, E, F, G, H, I, J, K, L , M, N, O,				        // 64 - 79
                               P, Q, R, S, T, U, V, W, X, Y, Z, SP, SP, SP, SP, UL,			        // 80 - 95
                               SP, SP};									                            // 96 - 97
