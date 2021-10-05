@@ -1,0 +1,13 @@
+[Unit]
+Description=PiDisplay
+Wants=apache2.service
+After=network-online.target multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/html/pidisplay/c
+ExecStart=/usr/bin/sudo ./LedMatrix -o text "PIDISPLAY READY"
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

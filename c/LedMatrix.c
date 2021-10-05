@@ -592,7 +592,7 @@ int main(int argc, char *argv[]) {
 			copyLetter(letters[i], ASCII[index]);
 		}
 
-		shiftingWord(letters, size, 32);
+		shiftingWord(letters, size, 18);
 	}
 	else if (strcmp(option, "stream") == 0) {
 		char fileName[42] = STREAM_FILE;
@@ -625,7 +625,7 @@ int main(int argc, char *argv[]) {
 	else if (strcmp(option, "animation") == 0) {
 		unsigned int startup_message[][9] = {P, I, D, I, S, P, L, A, Y, SP, R, E, A, D, Y};
 		int startup_message_size = sizeof(startup_message) / sizeof(startup_message[0]);
-		shiftingWord(startup_message, startup_message_size, 4);
+		shiftingWord(startup_message, startup_message_size, 18);
 	}
 	else {
 		spiral();
