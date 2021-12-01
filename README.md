@@ -1,4 +1,4 @@
-# PiDisplay - custom 8x24 LED matrix panel and driver for Raspberry Pi
+# PiDisplay - 8x24 LED matrix panel and driver for Raspberry Pi
 
 ![Example of pidisplay showing the message "Hi!"](https://github.com/andreivoda/pidisplay/blob/main/images/example_text.png?raw=true)
 
